@@ -1,4 +1,3 @@
-
 package com.example.userservice.service;
 
 import com.example.userservice.dto.UserDto;
@@ -9,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,17 +21,16 @@ import java.util.UUID;
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     UserRepository userRepository;
+    BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserServiceImpl(UserRepository userRepository,
+                           BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
-        this.bCryptPasswordEncoder=bCryptPasswordEncoder;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
-
-    
     @Override
     public UserDto createUser(UserDto userDto) {
         userDto.setUserId(UUID.randomUUID().toString());
@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         UserEntity userEntity = mapper.map(userDto, UserEntity.class);
-        userEntity.setEncryptedPwd("encrypted_password");
+        userEntity.setEncryptedPwd(bCryptPasswordEncoder.encode(userDto.getPwd()));
 
         userRepository.save(userEntity);
 
@@ -49,11 +49,14 @@ public class UserServiceImpl implements UserService {
     public UserDto getUserByUserId(String userId) {
         UserEntity userEntity = userRepository.findByUserId(userId);
 
-        if(userEntity ==null)
+        if (userEntity == null)
             throw new UsernameNotFoundException("User not found");
 
-        UserDto userDto = new ModelMapper().map(userEntity, UserDto.class);
+        ModelMapper mapper = new ModelMapper();
+        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        UserDto userDto = mapper.map(userEntity, UserDto.class);
 
+        /* order-service에서 주문 내역 조회 */
         List<ResponseOrder> ordersList = new ArrayList<>();
         userDto.setOrders(ordersList);
 
@@ -61,13 +64,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserDto getUserDetailsByEmail(String email) {
+        return null;
+    }
+
+    @Override
     public Iterable<UserEntity> getUserByAll() {
         return userRepository.findAll();
     }
 
-
     @Override
-    public UserDto getUserDetailsByEmail(String email) {
-        return null;
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+        UserEntity userEntity = userRepository.findByUserEmail(username);
+
+        if(userEntity == null){
+            throw new UsernameNotFoundException(username);
+        }
+
+        return new User(userEntity.getEmail(), userEntity.getEncryptedPwd(),true,true,true,true,new ArrayList<>());
     }
 }
