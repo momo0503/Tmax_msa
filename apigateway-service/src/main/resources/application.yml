@@ -4,63 +4,81 @@ server:
 spring:
   application:
     name: apigateway-service
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
   cloud:
     gateway:
       routes:
         - id: first-service
-          uri: lb://FIRST-SERVICE
-          #http://localhost:8081/
           predicates:
             - Path=/first-service/**
+          uri: lb://FIRST-SERVICE
           filters:
-            - AddRequestHeader=first-request, momo
-            - AddResponseHeader=first-response, Hi-momo
+            - AddRequestHeader=first-request, dowon-lee
+            - AddResponseHeader=first-response, Hi
         - id: second-service
-          uri: lb://SECOND-SERVICE
-          #http://localhost:8082/
           predicates:
             - Path=/second-service/**
+          uri: lb://SECOND-SERVICE
           filters:
-            - AddRequestHeader=second-request, kenneth
-            - AddResponseHeader=second-response, Hello-kenneth
+            - AddRequestHeader=second-header, kenneth
+            - AddResponseHeader=second-response, Hello
         - id: user-service
+          predicates:
+            - Path=/user-service/actuator/**
+            - Method=GET,POST
           uri: lb://USER-SERVICE
+          filters:
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
+        - id: user-service
           predicates:
             - Path=/user-service/login
             - Method=POST
+          uri: lb://USER-SERVICE
           filters:
-            - RemoveRequestHeader=Cookie
             - RewritePath=/user-service/(?<segment>.*), /$\{segment}
         - id: user-service
-          uri: lb://USER-SERVICE
           predicates:
             - Path=/user-service/users
             - Method=POST
+          uri: lb://USER-SERVICE
           filters:
-            - RemoveRequestHeader=Cookie
             - RewritePath=/user-service/(?<segment>.*), /$\{segment}
         - id: user-service
-          uri: lb://USER-SERVICE
           predicates:
             - Path=/user-service/**
             - Method=GET
+          uri: lb://USER-SERVICE
           filters:
-            - RemoveRequestHeader=Cookie
             - RewritePath=/user-service/(?<segment>.*), /$\{segment}
+            - AuthorizationHeaderFilter
         - id: catalog-service
-          uri: lb://CATALOG-SERVICE
           predicates:
             - Path=/catalog-service/**
+          uri: lb://CATALOG-SERVICE
           filters:
             - RewritePath=/catalog-service/(?<segment>.*), /$\{segment}
         - id: order-service
-          uri: lb://ORDER-SERVICE
           predicates:
             - Path=/order-service/**
-
+          uri: lb://ORDER-SERVICE
+          filters:
+            - RewritePath=/order-service/(?<segment>.*), /$\{segment}
 eureka:
   client:
     register-with-eureka: true
     fetch-registry: true
     service-url:
       defaultZone: http://localhost:8761/eureka
+
+#token:
+#  expiration_time: 864000000
+#  secret: user_token
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info, refresh, health, beans, httptrace, busrefresh

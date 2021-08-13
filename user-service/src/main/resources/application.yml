@@ -1,11 +1,14 @@
 server:
-  port: 0
+  port: 50001
 
 spring:
   application:
     name: user-service
-
-
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
   h2:
     console:
       enabled: true
@@ -13,19 +16,28 @@ spring:
         web-allow-others: true
       path: /h2-console
   datasource:
-      driver-class-name: org.h2.Driver
-      url: jdbc:h2:mem:testdb
-      username: sa
-      password:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
 
 eureka:
   client:
-    register-with-eureka: true
     fetch-registry: true
+    register-with-eureka: true
     service-url:
-      defaultzone: http://localhost:8761/eureka
+      defaultZone: http://localhost:8761/eureka
   instance:
     instance-id: ${spring.cloud.client.hostname}:${spring.application.instance_id:${random.value}}
 
 greeting:
-  message: Welcome to the simple E-commerce.!
+  message: Welcome to the simple E-commerce.
+
+#token:
+#  expiration_time: 864000000
+#  secret: user_token
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info,refresh,health,beans,busrefresh
