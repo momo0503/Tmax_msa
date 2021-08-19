@@ -1,4 +1,3 @@
-
 package com.example.userservice.jpa;
 
 import com.example.userservice.entity.UserEntity;

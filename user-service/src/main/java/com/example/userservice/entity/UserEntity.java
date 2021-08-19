@@ -1,4 +1,3 @@
-
 package com.example.userservice.entity;
 
 import lombok.Data;
