@@ -30,15 +30,16 @@ public class KafkaConsumer {
         Map<Object, Object> map = new HashMap<>();
         ObjectMapper mapper = new ObjectMapper();
         try {
-            map = mapper.readValue(kafkaMessage, new TypeReference<Map<Object, Object>>() {});
+            map = mapper.readValue(kafkaMessage, new TypeReference<Map<Object, Object>>() {
+            });
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
 
         // 수량 업데이트
-        CatalogEntity entity = repository.findByProductId((String)map.get("productId"));
+        CatalogEntity entity = repository.findByProductId((String) map.get("productId"));
         if (entity != null) {
-            entity.setStock(entity.getStock() - (Integer)map.get("qty"));
+            entity.setStock(entity.getStock() - (Integer) map.get("qty"));
             repository.save(entity);
         }
     }

@@ -12,15 +12,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class SecondServiceController {
 
     @GetMapping("/welcome")
-    public String welcome(){
+    public String welcome() {
 
         return "Welcome to the Second service.";
     }
 
     @GetMapping("/message")
-    public String message(@RequestHeader("second-header") String header){ //조금 간소화함 .
+    public String message(@RequestHeader("second-header") String header) { //조금 간소화함 .
         //log.debug("Request Header="+header);
-        log.debug("Request Header=%s",header);
+        log.debug("Request Header=%s", header);
         return "Hello, Second service";
     }
 

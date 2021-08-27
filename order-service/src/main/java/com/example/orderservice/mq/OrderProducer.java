@@ -48,7 +48,7 @@ public class OrderProducer {
         KafkaOrderDto kafkaOrderDto = new KafkaOrderDto(schema, payload);
 
         ObjectMapper mapper = new ObjectMapper();
-        String jsonInString  ="";
+        String jsonInString = "";
         try {
             jsonInString = mapper.writeValueAsString(kafkaOrderDto);
         } catch (JsonProcessingException e) {
