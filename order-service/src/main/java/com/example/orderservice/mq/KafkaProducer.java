@@ -20,7 +20,7 @@ public class KafkaProducer {
 
     public OrderDto send(String topic, OrderDto orderDto) {
         ObjectMapper mapper = new ObjectMapper();
-        String jsonInString = "";
+        String jsonInString  ="";
         try {
             jsonInString = mapper.writeValueAsString(orderDto);
         } catch (JsonProcessingException e) {

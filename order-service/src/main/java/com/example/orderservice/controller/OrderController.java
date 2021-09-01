@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 @RestController
@@ -72,16 +73,16 @@ public class OrderController {
             OrderDto orderDto = mapper.map(orderDetails, OrderDto.class);
             orderDto.setUserId(userId);
 
-//            OrderDto createdOrder = orderService.createOrder(orderDto);
+            OrderDto createdOrder = orderService.createOrder(orderDto);
 //            ResponseOrder responseOrder = mapper.map(createdOrder, ResponseOrder.class);
 
             /* send message to Kafka topic */
-            orderDto.setOrderId(UUID.randomUUID().toString());
-            orderDto.setTotalPrice(orderDto.getQty() * orderDto.getUnitPrice());
-            kafkaProducer.send("example-catalog-topic", orderDto);
-            ResponseOrder responseOrder = mapper.map(orderDto, ResponseOrder.class);
+//            createdOrder.setOrderId(UUID.randomUUID().toString());
+//            createdOrder.setTotalPrice(orderDto.getQty() * orderDto.getUnitPrice());
+            kafkaProducer.send("example-catalog-topic", createdOrder);
+            ResponseOrder responseOrder = mapper.map(createdOrder, ResponseOrder.class);
 
-            orderProducer.send("orders", orderDto);
+//            orderProducer.send("orders", orderDto);
 
             log.info("After added orders data");
             return ResponseEntity.status(HttpStatus.CREATED).body(responseOrder);
@@ -93,12 +94,26 @@ public class OrderController {
 
     @GetMapping("/{userId}/orders")
     public ResponseEntity<List<ResponseOrder>> getOrder(@PathVariable("userId") String userId) throws Exception {
+        log.info("Before retrieve orders data");
         Iterable<OrderEntity> orderList = orderService.getOrdersByUserId(userId);
 
         List<ResponseOrder> result = new ArrayList<>();
         orderList.forEach(v -> {
             result.add(new ModelMapper().map(v, ResponseOrder.class));
         });
+
+//        Random rnd = new Random(System.currentTimeMillis());
+//        int time = rnd.nextInt(3);
+//        if (time % 2 == 0) {
+//            try {
+//                Thread.sleep(1000);
+//                throw new Exception();
+//            } catch (InterruptedException ex) {
+//                log.warn(ex.getMessage());
+//            }
+//        }
+
+        log.info("After retrieve orders data");
 
         return ResponseEntity.status(HttpStatus.OK).body(result);
 //        throw new Exception("Server not working!");

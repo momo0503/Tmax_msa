@@ -1,4 +1,3 @@
-
 package com.example.userservice.client;
 
 import com.example.userservice.error.FeignErrorDecoder;

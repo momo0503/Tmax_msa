@@ -1,3 +1,4 @@
+
 package com.example.userservice.security;
 
 import com.example.userservice.service.UserService;
@@ -29,12 +30,14 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 //        http.authorizeRequests().antMatchers("/users/**").permitAll();
         http.authorizeRequests().antMatchers("/health_check/**").permitAll();
         http.authorizeRequests().antMatchers("/h2-console/**").permitAll();
-        http.authorizeRequests().antMatchers("/actuator/**").permitAll();
-        http.authorizeRequests().antMatchers("/**")
-                .access("hasIpAddress('172.30.1.59') or hasIpAddress('127.0.0.1')")
+//        http.authorizeRequests().antMatchers("/actuator/**").permitAll();
+        http.authorizeRequests()
+                .antMatchers("/**")
+//                .hasIpAddress(env.getProperty("gateway.ip"))
+                .access("hasIpAddress('172.18.0.5') or hasIpAddress('127.0.0.1')")
                 .and()
                 .addFilter(getAuthenticationFilter());
-
+        ;
         http.headers().frameOptions().disable();
     }
 

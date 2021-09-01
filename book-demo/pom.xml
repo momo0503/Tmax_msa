@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.example</groupId>
     <artifactId>book-demo</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <name>book-demo</name>
     <description>book-demo</description>
     <properties>
@@ -61,6 +61,5 @@
             </plugin>
         </plugins>
     </build>
-
 
 </project>
