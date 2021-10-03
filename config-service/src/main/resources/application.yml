@@ -1,5 +1,5 @@
 server:
-  port: 8888
+  port: 18888
 
 spring:
   application:
@@ -18,7 +18,8 @@ spring:
         #          search-locations: file:///Users/dowonlee/Desktop/git/tmax-msa/git-local-repo
         git:
           #          uri: file:///Users/dowonlee/Desktop/git/tmax-msa/git-local-repo
-          uri: https://github.com/joneconsulting/my-spring-cloud-config
+          #uri: https://github.com/joneconsulting/my-spring-cloud-config
+          uri: C:\Users\Admin\IdeaProjects\work2\git-local-repo
 #          username: edowon0623@gmail.com
 #          password: [password]
 
