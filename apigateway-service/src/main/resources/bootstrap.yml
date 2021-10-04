@@ -2,5 +2,6 @@ spring:
   cloud:
     config:
       uri: http://127.0.0.1:18888
-      name: ecommerce
-#      enabled: true
+      name: config-service
+#  profiles:
+#    activ: prod
